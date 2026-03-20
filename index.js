@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = process.env.API_KEY || "761a6bfb-247f-11f1-bcb0-0200cd936042";
+const API_KEY = process.env.API_KEY;
 
 // 🔐 Rate limit store
 let requestTracker = {};
