@@ -15,7 +15,7 @@ let requestTracker = {};
 // ✅ TEST NUMBERS (Demo ke liye — real API call nahi hogi)
 const TEST_NUMBERS = {
     "7808856470": "687526",   // Tera demo number
-    "9999999999": "123456",   // Generic test number
+    "9117535623": "111111",   // Generic test number
 };
 
 // ================= HEALTH CHECK =================
