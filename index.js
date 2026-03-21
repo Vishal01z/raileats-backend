@@ -40,8 +40,8 @@ app.post("/send-otp", async (req, res) => {
 
     try {
         const response = await axios.get(
-            `https://2factor.in/API/V1/${API_KEY}/SMS/${phone}/AUTOGEN2`
-        );
+   `https://2factor.in/API/V1/${API_KEY}/SMS/${phone}/AUTOGEN`
+);
 
         console.log("SEND OTP Response:", response.data);
 
