@@ -12,6 +12,12 @@ const API_KEY = process.env.API_KEY;
 // 🔐 Rate limit store
 let requestTracker = {};
 
+// ✅ TEST NUMBERS (Demo ke liye — real API call nahi hogi)
+const TEST_NUMBERS = {
+    "7808856470": "687526",   // Tera demo number
+    "9999999999": "123456",   // Generic test number
+};
+
 // ================= HEALTH CHECK =================
 app.get("/", (req, res) => {
     res.json({ status: "RailEats OTP Server Running 🚀" });
@@ -28,7 +34,17 @@ app.post("/send-otp", async (req, res) => {
         });
     }
 
-    // ⛔ Rate limit (30 sec)
+    // ✅ TEST NUMBER CHECK — Real API call skip karo
+    if (TEST_NUMBERS[phone]) {
+        console.log(`🧪 Test number used: ${phone}`);
+        return res.json({
+            success: true,
+            sessionId: `TEST_SESSION_${phone}`,  // Fake session ID
+            message: "OTP sent successfully"
+        });
+    }
+
+    // ⛔ Rate limit (30 sec) — Sirf real numbers ke liye
     const now = Date.now();
     if (requestTracker[phone] && now - requestTracker[phone] < 30000) {
         return res.json({
@@ -40,8 +56,8 @@ app.post("/send-otp", async (req, res) => {
 
     try {
         const response = await axios.get(
-   `https://2factor.in/API/V1/${API_KEY}/SMS/${phone}/AUTOGEN`
-);
+            `https://2factor.in/API/V1/${API_KEY}/SMS/${phone}/AUTOGEN`
+        );
 
         console.log("SEND OTP Response:", response.data);
 
@@ -78,6 +94,24 @@ app.post("/verify-otp", async (req, res) => {
         });
     }
 
+    // ✅ TEST NUMBER CHECK — Session ID se phone nikalo
+    if (sessionId.startsWith("TEST_SESSION_")) {
+        const phone = sessionId.replace("TEST_SESSION_", "");
+        const correctOtp = TEST_NUMBERS[phone];
+        if (otp === correctOtp) {
+            return res.json({
+                success: true,
+                message: "OTP verified successfully"
+            });
+        } else {
+            return res.json({
+                success: false,
+                message: "Wrong OTP ❌"
+            });
+        }
+    }
+
+    // Real OTP verify
     try {
         const response = await axios.get(
             `https://2factor.in/API/V1/${API_KEY}/SMS/VERIFY/${sessionId}/${otp}`
